@@ -84,8 +84,7 @@ Define the attributes of your Model class. You can usually map the table columns
 # Model class
 # (in lib/recipe.rb)
 
-class Student
-
+class Recipe
   # Replace the attributes by your own columns.
   attr_accessor :id, :name, :avg_cooking_time, :rating
 end
@@ -150,7 +149,7 @@ These examples will later be encoded as RSpec tests.
 # EXAMPLES
 
 # 1
-# Get all students
+# Get all recipes
 
 repo = RecipeRepository.new
 
@@ -238,6 +237,92 @@ describe RecipeRepository do
   end
 
   # (your tests will go here).
+
+describe RecipeRepository do
+
+    before(:each) do 
+        reset_recipe_table
+    end
+
+    it "#Returns the number of recipes in the db (14)" do
+        cookbook = RecipeRepository.new
+        expect(cookbook.universal_all.length).to eq 14
+    end
+
+    it "#Returns the information of recipe 1 - Spanish Omelette 45 minutes 5*" do
+        new_cookbook = RecipeRepository.new
+        cookbook = new_cookbook.primitive_all
+        expect(cookbook[0].id).to eq "1"
+        expect(cookbook[0].name).to eq "Spanish Omelette"
+        expect(cookbook[0].avg_cooking_time).to eq "45"
+        expect(cookbook[0].rating).to eq "5"
+    end
+
+    it "#Returns the information of recipe 5 - Breaded Mushrooms 30 minutes 5*" do
+        new_cookbook = RecipeRepository.new
+        cookbook = new_cookbook.primitive_all
+        expect(cookbook[4].id).to eq "5"
+        expect(cookbook[4].name).to eq "Breaded Mushrooms"
+        expect(cookbook[4].avg_cooking_time).to eq "30"
+        expect(cookbook[4].rating).to eq "5"
+    end
+
+    it "#Returns the information of recipe 14 - Green Peas 20 minutes 1*" do
+        new_cookbook = RecipeRepository.new
+        cookbook = new_cookbook.primitive_all
+        expect(cookbook[13].id).to eq "14"
+        expect(cookbook[13].name).to eq "Green Peas"
+        expect(cookbook[13].avg_cooking_time).to eq "20"
+        expect(cookbook[13].rating).to eq "1"
+    end
+
+    it "#Returns nil and prints an error message if no values or empty values" do
+        new_cookbook = RecipeRepository.new
+        expect(new_cookbook.find(nil, 0)).to eq nil
+    end
+
+    it "#Returns nil and prints an error message if no values or empty values" do
+        new_cookbook = RecipeRepository.new
+        expect(new_cookbook.find(13, 2)[0].name).to eq "Double Cheeseburger"
+    end
+
+    it "#Returns nil and prints an error message if no values or empty values" do
+        new_cookbook = RecipeRepository.new
+        expect(new_cookbook.find(18, 1)[0].name).to eq "Guacamole"
+        expect(new_cookbook.find(18, 1)[1].name).to eq "Double Cheeseburger"
+        expect(new_cookbook.find(18, 1)[2].name).to eq "Chicken Wings"
+    end
+
+end
+
 end
 8. Test-drive and implement the Repository class behaviour
 After each test you write, follow the test-driving process of red, green, refactor to implement the behaviour.
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+To work on this challenge, first:
+
+Setup a new project directory recipes_directory.
+Create a new database recipes_directory.
+Create a new test database recipes_directory_test for your tests.
+Then:
+
+Design and create the table for the following user stories.
+
+As a food lover,
+So I can stay organised and decide what to cook,
+I'd like to keep a list of all my recipes with their names.
+
+As a food lover,
+So I can stay organised and decide what to cook,
+I'd like to keep the average cooking time (in minutes) for each recipe.
+
+As a food lover,
+So I can stay organised and decide what to cook,
+I'd like to give a rating to each of the recipes (from 1 to 5).
+Test-drive the Repository class for this new table. You should design, test-drive and implement two methods all and find.
+
+Write code in the main file app.rb so it prints out the list of recipes.

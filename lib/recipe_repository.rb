@@ -17,7 +17,7 @@ class RecipeRepository
         universal_all(true, true, false) # print function can be called with all the values
     end
 
-    def print_values(recipe_sample, time, rate)
+    def print_values(recipe_sample, time, rate) #this function is set just to print values
         print_string = "Recipe ##{recipe_sample.id} " + " "*(3-recipe_sample.id.to_s.length) +
                 "| #{recipe_sample.name} " + " "*(20-recipe_sample.name.length) + "|"
         if time #if we requested time, we also add the values
@@ -41,8 +41,6 @@ class RecipeRepository
         #if name then add_option(@search_values, "name, ") end
         if time then add_option(@search_values, ", avg_cooking_time") end # Add avg cooking time if requested, for the method and db
         if rate then add_option(@search_values, ", rating") end # Add rating if requested, for the method and db
-        #@search_values.chomp!(", ")
-        #if condition != false then add_option(@search_values, condition) end
         sql = "SELECT id, name #{@search_values} FROM recipes #{condition};" #This make the db call with the parameters we want 
         result = DatabaseConnection.exec_params(sql, [])
         @cookbook = [] #We initialize our list or the list we want to produce
@@ -67,27 +65,28 @@ class RecipeRepository
                         # iteration through all the DB if it's not too big or we were working with all if the DB
     end
 
-    def find (timecondition = nil, ratecondition = 0)  #En verdad puedo usar el método de antes y además darle una condición
-                                                        #querré algo que sea mayor que cierto rating y menor que cierto tiempo
-                                                        # si el tiempo y el rate es verdadero añade AND si no, usa uno de los dos y listo
-                                                        # ya tengo algo que busca time y rate quiero solo la condicion
-        condition = " WHERE"
-        if timecondition != nil
-            condition = condition + " avg_cooking_time <= " + timecondition.to_s
-            time = true
+    def find (timecondition = nil, ratecondition = 0)  #Now can can use the method implemented before, thinking that when we want something
+                                                        #related with rating, it will be equal or greater than, and when we want something
+                                                        #related with time, should be equal or less than
+                                                        #if both options are required then we add an AND if not uses the one that needs and it fine
+                                                        #we are already showing/searching for time/rating, we just need a condition
+        condition = " WHERE" #variable is initialized with the where statement
+        if timecondition != nil #so if something comes, then we add it
+            condition = condition + " avg_cooking_time <= " + timecondition.to_s #we add it to the previous string
+            time = true #and we also initialize/give a value for calling the next function as we are going to make use of it
         end
-        if (timecondition != nil && ratecondition != 0)
-            condition = condition + " AND" #añade AND
+        if (timecondition != nil && ratecondition != 0) #if both parameters are required, we need to add an AND for the db
+            condition = condition + " AND" #we add the add to ourstring
         end
-        if ratecondition > 0
-            condition = condition + " rating >= " + ratecondition.to_s
-            rate = true
+        if ratecondition > 0 #and now we continue adding -or not- the rating
+            condition = condition + " rating >= " + ratecondition.to_s #then we add it to our string as well
+            rate = true #and initialize/create the parameter for our next call to the method we created before
         end
-        if condition != " WHERE"
-            universal_all(time, rate, true, condition)
-        else
+        if condition != " WHERE" #If we did change our statement from the beginning then we proceed to pass it
+            universal_all(time, rate, true, condition) #and we call our "universal" function to do the rest
+        else #then is nothing has changed we don't do anything and show an error message 
             puts "Search values not defined."
-            return nil
+            return nil #and we return nil to indicate nothing has been done as we don't have proper values
         end
 
     end
